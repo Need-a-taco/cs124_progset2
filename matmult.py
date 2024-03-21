@@ -1,9 +1,13 @@
 import numpy as np
 
-A = [[1, 2], [3, 4]]
-B = [[5, 6], [7, 8]]
-C = [[1, 1, 2, 2], [1, 1, 2, 2], [3, 3, 4, 4], [3, 3, 4, 4]]
-D = [[1, 1, 2, 2], [1, 1, 2, 2], [3, 3, 4, 4], [3, 3, 4, 4]]
+C = [[1, 1, 1, 1, 2, 2, 2, 2],
+     [1, 1, 1, 1, 2, 2, 2, 2],
+     [1, 1, 1, 1, 2, 2, 2, 2],
+     [1, 1, 1, 1, 2, 2, 2, 2],
+     [3, 3, 3, 3, 4, 4, 4, 4],
+     [3, 3, 3, 3, 4, 4, 4, 4],
+     [3, 3, 3, 3, 4, 4, 4, 4],
+     [3, 3, 3, 3, 4, 4, 4, 4],]
 
 ###########################################################
 #                                                         #
@@ -24,7 +28,7 @@ def mergeblocks(upleft, upright, downleft, downright):
     def mat_to_lst(mat):
         new_lst = []
         for lst in mat:
-            for i in lst:
+            for i in range(len(lst)):
                 new_lst.append(lst[i])
         return new_lst
     
@@ -106,10 +110,17 @@ def strassen_matmult(mat1, mat2):
         mat1 = pad_matrix(mat1)
         mat2 = pad_matrix(mat2)
         
+    # Establish an arbitrary base case. To be adjusted
+    if (len(mat1) == 2):
+        mat_prod = conventional_matmult(mat1, mat2)
+        return mat_prod
+        
     
     # --- Divide the matrices into blocks --- #
     n = len(mat1)
     x = y = (n / 2)
+    x = int(x)
+    y = int(y)
     
     a = get_matrix_block(mat1, 0, x, 0, y)
     e = get_matrix_block(mat2, 0, x, 0, y) # Upper right blocks
@@ -147,3 +158,5 @@ def strassen_matmult(mat1, mat2):
                           downleft_block, downright_block)
     
     return matmult
+
+print(strassen_matmult(C, C))
