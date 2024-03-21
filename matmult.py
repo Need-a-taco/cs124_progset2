@@ -147,5 +147,3 @@ def strassen_matmult(mat1, mat2):
                           downleft_block, downright_block)
     
     return matmult
-
-print(strassen_matmult(C, D))
