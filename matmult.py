@@ -1,33 +1,91 @@
 import numpy as np
 
-# class Matrix:
-#     def __init__(self):
-
 A = [[1, 2], [3, 4]]
 B = [[5, 6], [7, 8]]
-C = [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
-D = [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
-u = [3, 4, 5]
-v = [3, 4, 5]
-s = [[3], [4], [5]]
+C = [[1, 1, 2, 2], [1, 1, 2, 2], [3, 3, 4, 4], [3, 3, 4, 4]]
+D = [[1, 1, 2, 2], [1, 1, 2, 2], [3, 3, 4, 4], [3, 3, 4, 4]]
 
-def dotproduct(u, v):
-    dotproduct = 0
-    for i in range(len(u)):
-        dotproduct += u[i] * v[i]
-    return dotproduct
+###########################################################
+#                                                         #
+# These are all helper functions for strassen's algorithm #
+#                                                         #
+###########################################################
 
-# print(dotproduct(u, v))
+def get_matrix_block(mat, x0, x1, y0, y1):
+        matrix_block = []
+        for i in range(x0, x1):
+            new_row = []
+            for j in range(y0, y1):    
+                new_row.append(mat[i][j])
+            matrix_block.append(new_row)
+        return matrix_block
+
+def mergeblocks(upleft, upright, downleft, downright):
+    def mat_to_lst(mat):
+        new_lst = []
+        for lst in mat:
+            for i in lst:
+                new_lst.append(lst[i])
+        return new_lst
+    
+    def add_from_block(lst, mat):
+        lst.append(mat[0])
+        mat.pop(0)
         
-def dotproduct_row_column (u, v):
-    dotproduct = 0
-    for i in range(len(u)):
-        dotproduct += u[i] * v[i][0]
-    return dotproduct
+    ul = mat_to_lst(upleft)
+    ur = mat_to_lst(upright)
+    dl = mat_to_lst(downleft)
+    dr = mat_to_lst(downright)
+    
+    new_mat = []
+    n = len(upleft)
+    cutoff = n / 2
+    for i in range(n):
+        new_row = []
+        for j in range(n):
+            if (i <= cutoff) and (j <= cutoff):
+                add_from_block(new_row, ul)
+            elif (i <= cutoff) and (j > cutoff):
+                add_from_block(new_row, ur)
+            elif (i >= cutoff) and (j <= cutoff):
+                add_from_block(new_row, dl)
+            else:
+                add_from_block(new_row, dr)
+    return new_mat
 
-# print(dotproduct_row_column(v, s))
+def pad_matrix(mat):
+    np_mat = np.array(mat)
+    pad_np_mat = np.pad(np_mat, ((0, 1), (0, 1)), mode='constant', constant_values=0)
+    pad_mat = pad_np_mat.tolist()
+    return pad_mat
 
-def matmult(mat1, mat2):
+def matrix_addition(mat1, mat2):
+    new_mat = []
+    n = len(mat1)
+    for i in range(n):
+        new_row = []
+        for j in range(n):
+            new_row.append(mat1[i][j] + mat2[i][j])
+        new_mat.append(new_row)
+    return new_mat
+
+def matrix_subtraction(mat1, mat2):
+    new_mat = []
+    n = len(mat1)
+    for i in range(n):
+        new_row = []
+        for j in range(n):
+            new_row.append(mat1[i][j] - mat2[i][j])
+        new_mat.append(new_row)
+    return new_mat
+
+#############################################################
+#                                                           #
+# Now onto the actual matrix multiplication implementations #
+#                                                           #
+#############################################################
+
+def conventional_matmult(mat1, mat2):
     new_mat = []
     m = len(mat1)
     n = len(mat1[0])
@@ -41,39 +99,53 @@ def matmult(mat1, mat2):
         new_mat.append(new_row)
     return new_mat
 
-
 def strassen_matmult(mat1, mat2):
-    # Meant for square matrices
-    n = len(mat1)
-    upleft_block1 = []
-    upright_block1 = []
-    downleft_block1 = []
-    downright_block1 = []
-    upleft_block2 = []
-    upright_block2 = []
-    downleft_block2 = []
-    downright_block2 = []
-    # This is wrong, needs to make new rows...
-    for i in range(n):
-        for j in range(n):
-            if (i < n/2) and (j < n/2):
-                upleft_block1.append(mat1[i][j])
-            elif (i < n/2) and (j > n/2):
-                upright_block1.append(mat1[i][j])
-            elif (i > n/2) and (j < n/2):
-                downleft_block1.append(mat1[i][j])
-            else:
-                downright_block1.append(mat1[i][j])
-    for i in range(n):
-        for j in range(n):
-            if (i < n/2) and (j < n/2):
-                upleft_block2.append(mat2[i][j])
-            elif (i < n/2) and (j > n/2):
-                upright_block2.append(mat2[i][j])
-            elif (i > n/2) and (j < n/2):
-                downleft_block2.append(mat2[i][j])
-            else:
-                downright_block2.append(mat2[i][j])
-    print(upleft_block1, upleft_block2)
+
+    # Make dimensions are even, not odd.
+    if (len(mat1) % 2 != 0):
+        mat1 = pad_matrix(mat1)
+        mat2 = pad_matrix(mat2)
+        
     
+    # --- Divide the matrices into blocks --- #
+    n = len(mat1)
+    x = y = (n / 2)
+    
+    a = get_matrix_block(mat1, 0, x, 0, y)
+    e = get_matrix_block(mat2, 0, x, 0, y) # Upper right blocks
+    
+    b = get_matrix_block(mat1, 0, x, y, n)
+    f = get_matrix_block(mat2, 0, x, y, n) # Upper left blocks
+    
+    c = get_matrix_block(mat1, x, n, 0, y)
+    g = get_matrix_block(mat2, x, n, 0, y) # Lower left blocks
+    
+    d = get_matrix_block(mat1, x, n, y, n)
+    h = get_matrix_block(mat2, x, n, y, n) # Lower right blocks
+    
+    
+    # --- Calculate multiplication with only 7 variables --- # 
+    p1 = strassen_matmult(a, matrix_subtraction(f, h))
+    p2 = strassen_matmult(matrix_addition(a, b), h)
+    p3 = strassen_matmult(matrix_addition(c, d), e)
+    p4 = strassen_matmult(d, matrix_subtraction(g, e))
+    p5 = strassen_matmult(matrix_addition(a, d), matrix_addition(e, h))
+    p6 = strassen_matmult(matrix_subtraction(b, d), matrix_addition(g, h))
+    p7 = strassen_matmult(matrix_subtraction(a, c), matrix_addition(e, f))
+
+    # --- Calculate the new blocks with these 7 variables --- #
+    
+    upleft_block = matrix_subtraction(matrix_addition(p5, p4), 
+                                matrix_addition(p2, p6))
+    upright_block = matrix_addition(p1, p2)
+    downleft_block = matrix_addition(p3, p4)
+    downright_block = matrix_subtraction(matrix_addition(p1, p5), 
+                                         matrix_subtraction(p3, p7))
+    
+    # Merge the new blocks
+    matmult = mergeblocks(upleft_block, upright_block, 
+                          downleft_block, downright_block)
+    
+    return matmult
+
 print(strassen_matmult(C, D))
