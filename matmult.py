@@ -150,5 +150,3 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-    def main():
-        
