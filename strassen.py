@@ -174,4 +174,3 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-print(conventional_matmult(D, D))
