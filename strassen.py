@@ -1,7 +1,6 @@
 import numpy as np
 import sys
 
-
 C = [[1, 1, 1, 1, 2, 2, 2, 2],
      [1, 1, 1, 1, 2, 2, 2, 2],
      [1, 1, 1, 1, 2, 2, 2, 2],
@@ -174,4 +173,20 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-print(conventional_matmult(D, D))
+def main():
+    # Parse input file
+    dim = sys.argv[2]
+    inputfile = []
+    for line in (sys.argv[3]):
+        inputfile.append(line)
+    inputfile_len = len(inputfile)
+    mat1 = []
+    mat2 = []
+    
+    for i in range(0, (inputfile_len / 2), dim):
+        mat1.append(inputfile[i : i + dim])
+    for i in range((inputfile_len / 2), inputfile_len, dim):
+        mat2.append(inputfile[i : i + dim])
+    
+    matmult = strassen_matmult(mat1, mat2)
+    return matmult
