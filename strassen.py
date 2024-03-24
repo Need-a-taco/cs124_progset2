@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+
 
 C = [[1, 1, 1, 1, 2, 2, 2, 2],
      [1, 1, 1, 1, 2, 2, 2, 2],
@@ -8,6 +10,17 @@ C = [[1, 1, 1, 1, 2, 2, 2, 2],
      [3, 3, 3, 3, 4, 4, 4, 4],
      [3, 3, 3, 3, 4, 4, 4, 4],
      [3, 3, 3, 3, 4, 4, 4, 4],]
+D = [[1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4]]
+
 
 ###########################################################
 #                                                         #
@@ -27,34 +40,36 @@ def get_matrix_block(mat, x0, x1, y0, y1):
 def mergeblocks(upleft, upright, downleft, downright):
     def mat_to_lst(mat):
         new_lst = []
-        for lst in mat:
-            for i in range(len(lst)):
-                new_lst.append(lst[i])
+        for row in mat:
+            for element in row:
+                new_lst.append(element)
         return new_lst
-    
+
     def add_from_block(lst, mat):
-        lst.append(mat[0])
-        mat.pop(0)
-        
+        if mat:
+            lst.extend(mat[0])
+
     ul = mat_to_lst(upleft)
     ur = mat_to_lst(upright)
     dl = mat_to_lst(downleft)
     dr = mat_to_lst(downright)
-    
+
     new_mat = []
     n = len(upleft)
-    cutoff = n / 2
+    cutoff = n // 2
     for i in range(n):
         new_row = []
         for j in range(n):
-            if (i <= cutoff) and (j <= cutoff):
+            if (i < cutoff) and (j < cutoff):
                 add_from_block(new_row, ul)
-            elif (i <= cutoff) and (j > cutoff):
+            elif (i < cutoff) and (j >= cutoff):
                 add_from_block(new_row, ur)
-            elif (i >= cutoff) and (j <= cutoff):
+            elif (i >= cutoff) and (j < cutoff):
                 add_from_block(new_row, dl)
             else:
                 add_from_block(new_row, dr)
+        new_mat.append(new_row)
+
     return new_mat
 
 def pad_matrix(mat):
@@ -159,4 +174,4 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-print(strassen_matmult(C, C))
+print(conventional_matmult(D, D))
