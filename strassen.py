@@ -106,7 +106,7 @@ def strassen_matmult(mat1, mat2):
         mat1 = pad_matrix(mat1)
         mat2 = pad_matrix(mat2)
     # Establish an arbitrary base case. To be adjusted
-    if (len(mat1) == 2):
+    if (len(mat1) <= 2):
         mat_prod = conventional_matmult(mat1, mat2)
         return mat_prod
         
@@ -152,7 +152,7 @@ def strassen_matmult(mat1, mat2):
                           downleft_block, downright_block)
     
     return matmult
-
+print(strassen_matmult([[1]], [[1]]))
 def main():
     # Parse input file
     dim = int(sys.argv[2])
@@ -173,10 +173,8 @@ def main():
     matmult = strassen_matmult(mat1, mat2)
     if len(matmult) != dim:
         matmult = [row[:dim] for row in matmult[:dim]]
-    res = []
     for i in range(dim):
-        res.append(matmult[i][i])
-    print(res)
+        print(matmult[i][i])
 
 
 if __name__ == "__main__":
