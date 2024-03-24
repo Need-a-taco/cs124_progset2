@@ -102,7 +102,7 @@ def conventional_matmult(mat1, mat2):
 def strassen_matmult(mat1, mat2):
 
     # Make dimensions a power of 2
-    if np.log2(len(mat1)) % 1 != 0:
+    if len(mat1) > 0 and np.log2(len(mat1)) % 1 != 0:
         mat1 = pad_matrix(mat1)
         mat2 = pad_matrix(mat2)
     # Establish an arbitrary base case. To be adjusted
