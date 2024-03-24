@@ -20,6 +20,11 @@ D = [[1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
      [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
      [3, 3, 3, 3, 3, 4, 4, 4, 4, 4]]
 
+E = [[1,2,3],
+     [1,2,3],
+     [1,2,3]]
+D = [[1,2],
+     [1,2]]
 
 ###########################################################
 #                                                         #
@@ -37,39 +42,20 @@ def get_matrix_block(mat, x0, x1, y0, y1):
         return matrix_block
 
 def mergeblocks(upleft, upright, downleft, downright):
-    def mat_to_lst(mat):
-        new_lst = []
-        for row in mat:
-            for element in row:
-                new_lst.append(element)
-        return new_lst
-
-    ul = mat_to_lst(upleft)
-    ur = mat_to_lst(upright)
-    dl = mat_to_lst(downleft)
-    dr = mat_to_lst(downright)
-
     new_mat = []
-    n = len(upleft) * 2
-    cutoff = n // 2
-    for i in range(n):
-        new_row = []
-        for j in range(n):
-            if (i < cutoff) and (j < cutoff):
-                new_row.append(ul.pop(0))
-            elif (i < cutoff) and (j >= cutoff):
-                new_row.append(ur.pop(0))
-            elif (i >= cutoff) and (j < cutoff):
-                new_row.append(dl.pop(0))
-            else:
-                new_row.append(dr.pop(0))
-        new_mat.append(new_row)
-
+    for i in range(len(upleft)):
+        new_mat.append(upleft[i] + upright[i])
+    
+    for i in range(len(downleft)):
+        new_mat.append(downleft[i] + downright[i])
+        
     return new_mat
 
 def pad_matrix(mat):
-    np_mat = np.array(mat)
-    pad_np_mat = np.pad(np_mat, ((0, 1), (0, 1)), mode='constant', constant_values=0)
+    original_size = len(mat) 
+    next_power_of_2 = 2**np.ceil(np.log2(original_size)).astype(int)
+    pad_len = next_power_of_2 - original_size
+    pad_np_mat = np.pad(mat, ((0, pad_len), (0, pad_len)), 'constant', constant_values=0)
     pad_mat = pad_np_mat.tolist()
     return pad_mat
 
@@ -115,11 +101,10 @@ def conventional_matmult(mat1, mat2):
 
 def strassen_matmult(mat1, mat2):
 
-    # Make dimensions are even, not odd.
-    if (len(mat1) % 2 != 0):
+    # Make dimensions a power of 2
+    if np.log2(len(mat1)) % 1 != 0:
         mat1 = pad_matrix(mat1)
         mat2 = pad_matrix(mat2)
-        
     # Establish an arbitrary base case. To be adjusted
     if (len(mat1) == 2):
         mat_prod = conventional_matmult(mat1, mat2)
@@ -134,15 +119,29 @@ def strassen_matmult(mat1, mat2):
     
     a = get_matrix_block(mat1, 0, x, 0, y)
     e = get_matrix_block(mat2, 0, x, 0, y) # Upper right blocks
+    print("a")
+    print(a)
+    print("e")
+    print(e)
     
     b = get_matrix_block(mat1, 0, x, y, n)
     f = get_matrix_block(mat2, 0, x, y, n) # Upper left blocks
+    print("b")
+    print(b)
+    print("f")
+    print(f)
     
     c = get_matrix_block(mat1, x, n, 0, y)
     g = get_matrix_block(mat2, x, n, 0, y) # Lower left blocks
+    print("c")
+    print(c)
     
     d = get_matrix_block(mat1, x, n, y, n)
     h = get_matrix_block(mat2, x, n, y, n) # Lower right blocks
+    print("d")
+    print(d)
+    print("h")
+    print(h)
     
     
     # --- Calculate multiplication with only 7 variables --- # 
@@ -156,12 +155,11 @@ def strassen_matmult(mat1, mat2):
 
     # --- Calculate the new blocks with these 7 variables --- #
     
-    upleft_block = matrix_subtraction(matrix_addition(p5, p4), 
-                                matrix_addition(p2, p6))
+    upleft_block = matrix_addition(matrix_subtraction(matrix_addition(p5, p4), p2), p6)
     upright_block = matrix_addition(p1, p2)
     downleft_block = matrix_addition(p3, p4)
-    downright_block = matrix_subtraction(matrix_addition(p1, p5), 
-                                         matrix_subtraction(p3, p7))
+    downright_block = matrix_subtraction(matrix_subtraction(matrix_addition(p1, p5), p3), p7)
+
     
     # Merge the new blocks
     matmult = mergeblocks(upleft_block, upright_block, 
@@ -169,8 +167,6 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-print(strassen_matmult(C, C))
-print(conventional_matmult(C, C))
 
 def main():
     # Parse input file
@@ -190,9 +186,11 @@ def main():
         mat2.append(entries[i : i + dim])
     
     matmult = strassen_matmult(mat1, mat2)
+    if len(matmult) != dim:
+        matmult = [row[:dim] for row in matmult[:dim]]
     print(matmult)
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
 
 
