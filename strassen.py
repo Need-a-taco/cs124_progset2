@@ -175,18 +175,25 @@ def strassen_matmult(mat1, mat2):
 
 def main():
     # Parse input file
-    dim = sys.argv[2]
-    inputfile = []
-    for line in (sys.argv[3]):
-        inputfile.append(line)
-    inputfile_len = len(inputfile)
+    dim = int(sys.argv[2])
+    
+    inputfile = open("inputfile.txt", "r")
+    entries = []
+    for line in (inputfile):
+        entries.append(int(line))
+    entries_len = len(entries)
     mat1 = []
     mat2 = []
     
-    for i in range(0, (inputfile_len / 2), dim):
-        mat1.append(inputfile[i : i + dim])
-    for i in range((inputfile_len / 2), inputfile_len, dim):
-        mat2.append(inputfile[i : i + dim])
+    for i in range(0, (entries_len // 2), dim):
+        mat1.append(entries[i : i + dim])
+    for i in range((entries_len // 2), entries_len, dim):
+        mat2.append(entries[i : i + dim])
     
     matmult = strassen_matmult(mat1, mat2)
-    return matmult
+    print(matmult)
+
+if __name__ == "__main__":
+    main()
+
+
