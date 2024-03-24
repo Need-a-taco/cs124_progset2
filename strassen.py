@@ -50,7 +50,7 @@ def mergeblocks(upleft, upright, downleft, downright):
     dr = mat_to_lst(downright)
 
     new_mat = []
-    n = len(upleft)
+    n = len(upleft) * 2
     cutoff = n // 2
     for i in range(n):
         new_row = []
@@ -169,11 +169,14 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
+print(strassen_matmult(C, C))
+print(conventional_matmult(C, C))
+
 def main():
     # Parse input file
     dim = int(sys.argv[2])
     
-    inputfile = open(sys.argv[3], "r")
+    inputfile = open('inputfile.txt', "r")
     entries = []
     for line in (inputfile):
         entries.append(int(line))
@@ -189,7 +192,7 @@ def main():
     matmult = strassen_matmult(mat1, mat2)
     print(matmult)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
 
