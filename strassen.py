@@ -119,30 +119,16 @@ def strassen_matmult(mat1, mat2):
     
     a = get_matrix_block(mat1, 0, x, 0, y)
     e = get_matrix_block(mat2, 0, x, 0, y) # Upper right blocks
-    print("a")
-    print(a)
-    print("e")
-    print(e)
     
     b = get_matrix_block(mat1, 0, x, y, n)
     f = get_matrix_block(mat2, 0, x, y, n) # Upper left blocks
-    print("b")
-    print(b)
-    print("f")
-    print(f)
     
     c = get_matrix_block(mat1, x, n, 0, y)
     g = get_matrix_block(mat2, x, n, 0, y) # Lower left blocks
-    print("c")
-    print(c)
     
     d = get_matrix_block(mat1, x, n, y, n)
     h = get_matrix_block(mat2, x, n, y, n) # Lower right blocks
-    print("d")
-    print(d)
-    print("h")
-    print(h)
-    
+
     
     # --- Calculate multiplication with only 7 variables --- # 
     p1 = strassen_matmult(a, matrix_subtraction(f, h))
