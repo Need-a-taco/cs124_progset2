@@ -172,7 +172,7 @@ def main():
     # Parse input file
     dim = int(sys.argv[2])
     
-    inputfile = open('inputfile.txt', "r")
+    inputfile = open(sys.arg[3], "r")
     entries = []
     for line in (inputfile):
         entries.append(int(line))
