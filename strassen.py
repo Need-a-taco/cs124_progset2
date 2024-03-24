@@ -44,10 +44,6 @@ def mergeblocks(upleft, upright, downleft, downright):
                 new_lst.append(element)
         return new_lst
 
-    def add_from_block(lst, mat):
-        if mat:
-            lst.extend(mat[0])
-
     ul = mat_to_lst(upleft)
     ur = mat_to_lst(upright)
     dl = mat_to_lst(downleft)
@@ -60,13 +56,13 @@ def mergeblocks(upleft, upright, downleft, downright):
         new_row = []
         for j in range(n):
             if (i < cutoff) and (j < cutoff):
-                add_from_block(new_row, ul)
+                new_row.append(ul.pop(0))
             elif (i < cutoff) and (j >= cutoff):
-                add_from_block(new_row, ur)
+                new_row.append(ur.pop(0))
             elif (i >= cutoff) and (j < cutoff):
-                add_from_block(new_row, dl)
+                new_row.append(dl.pop(0))
             else:
-                add_from_block(new_row, dr)
+                new_row.append(dr.pop(0))
         new_mat.append(new_row)
 
     return new_mat
