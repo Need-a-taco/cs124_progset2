@@ -153,7 +153,6 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 
-
 def main():
     # Parse input file
     dim = int(sys.argv[2])
@@ -174,7 +173,11 @@ def main():
     matmult = strassen_matmult(mat1, mat2)
     if len(matmult) != dim:
         matmult = [row[:dim] for row in matmult[:dim]]
-    print(matmult)
+    res = []
+    for i in range(dim):
+        res.append(matmult[i][i])
+    print(res)
+
 
 if __name__ == "__main__":
     main()
