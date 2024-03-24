@@ -152,7 +152,6 @@ def strassen_matmult(mat1, mat2):
                           downleft_block, downright_block)
     
     return matmult
-print(strassen_matmult([[1]], [[1]]))
 def main():
     # Parse input file
     dim = int(sys.argv[2])
