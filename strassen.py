@@ -1,31 +1,7 @@
 import numpy as np
 import sys
 import time
-
-C = [[1, 1, 1, 1, 2, 2, 2, 2],
-     [1, 1, 1, 1, 2, 2, 2, 2],
-     [1, 1, 1, 1, 2, 2, 2, 2],
-     [1, 1, 1, 1, 2, 2, 2, 2],
-     [3, 3, 3, 3, 4, 4, 4, 4],
-     [3, 3, 3, 3, 4, 4, 4, 4],
-     [3, 3, 3, 3, 4, 4, 4, 4],
-     [3, 3, 3, 3, 4, 4, 4, 4],]
-D = [[1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-     [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
-     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
-     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
-     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
-     [3, 3, 3, 3, 3, 4, 4, 4, 4, 4]]
-
-E = [[1,2,3],
-     [1,2,3],
-     [1,2,3]]
-D = [[1,2],
-     [1,2]]
+import random
 
 ###########################################################
 #                                                         #
@@ -101,7 +77,6 @@ def conventional_matmult(mat1, mat2):
     return new_mat
 
 def strassen_matmult(mat1, mat2):
-
     # Make dimensions a power of 2
     if len(mat1) > 0 and np.log2(len(mat1)) % 1 != 0:
         mat1 = pad_matrix(mat1)
@@ -153,7 +128,15 @@ def strassen_matmult(mat1, mat2):
                           downleft_block, downright_block)
     
     return matmult
-def main():
+
+#######################################
+#                                     #
+# Implement the Programming Set Tasks #
+#                                     #
+#######################################
+
+# Task 1
+def testing_threshold():
     avg_runtime = 0
     for _ in range(5):
         start = time.time()
@@ -183,6 +166,75 @@ def main():
         avg_runtime += end - start
     avg_runtime = avg_runtime / 5
     print(avg_runtime)
+
+# Task 2: What we actually submit to Gradescope
+def matrix_multplication():
+    for _ in range(5):
+        # Parse input file
+        dimension = int(sys.argv[2])
+        
+        inputfile = open(sys.argv[3], "r")
+        entries = []
+        for line in (inputfile):
+            entries.append(int(line))
+        entries_len = len(entries)
+        mat1 = []
+        mat2 = []
+        
+        for i in range(0, (entries_len // 2), dimension):
+            mat1.append(entries[i : i + dimension])
+        for i in range((entries_len // 2), entries_len, dimension):
+            mat2.append(entries[i : i + dimension])
+        
+        matmult = strassen_matmult(mat1, mat2)
+        if len(matmult) != dimension:
+            matmult = [row[:dimension] for row in matmult[:dimension]]
+        
+        for i in range(dimension):
+            print(matmult[i][i])
+
+
+# Task 3: Finding triangles in graphs, also purely testing
+def count_triangles(n, p):
+    # def include_edge(p):     
+    #     result = np.random.binomial(1,p)
+    #     return result
+    
+    '''
+    # Initialize adjacency matrix
+    adj_mat = []
+    for i in range(n):
+        new_row = [124] * n
+        adj_mat.append(new_row)
+        
+    # Randomly generate the adjacency matrix
+    for i in range(n):
+        for j in range(n):
+            if (adj_mat[i][j] == 124):
+                adj_mat[i][j] = adj_mat[j][i] = include_edge(p)
+    '''
+    
+    adj_mat = [[0 for _ in range(n)] for _ in range(n)]
+    for i in range(len(adj_mat)):
+        for j in range(i,len(adj_mat)):
+            val = np.random.binomial(1,p)
+            adj_mat[i][j] = val
+            if i != j:
+                adj_mat[j][i] = val
+    print(adj_mat)
+    # Find the cube of adjacency matrix
+    adj_mat_cubed = strassen_matmult(adj_mat, strassen_matmult(adj_mat, adj_mat))
+    print("\n")
+    print(adj_mat_cubed)
+    num_triangles = 0
+    
+    for i in range(n):
+        num_triangles += adj_mat_cubed[i][i]
+    num_triangles //= 6
+    print(num_triangles)
+        
+def main():
+    count_triangles(8, 0.1)
 
 if __name__ == "__main__":
     main()

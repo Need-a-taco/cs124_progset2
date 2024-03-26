@@ -1,8 +1,18 @@
-import random
+import numpy as np
 
-f = open("inputfile.txt", "a")
-n = 257
-big_n = 2 * (257**2)
-for _ in range(big_n):
-    x = random.randint(0, 10)
-    f.write(f"{x}\n")
+def include_edge(p):     
+    result = np.random.binomial(1,p)
+    return result
+
+n = 1024
+matrix_dim = n**2
+p = 0.01
+
+matrices = [124] * (matrix_dim * 2)
+
+with open('inputfile.txt', 'w+') as matrix_file:
+
+
+    for _ in range(matrix_dim):
+        x = include_edge(p)
+        matrix_file.write(f"{x}\n")
