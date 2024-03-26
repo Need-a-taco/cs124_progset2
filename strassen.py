@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import time
+import random
 
 C = [[1, 1, 1, 1, 2, 2, 2, 2],
      [1, 1, 1, 1, 2, 2, 2, 2],
@@ -154,28 +155,37 @@ def strassen_matmult(mat1, mat2):
     
     return matmult
 def main():
+    dim = 64
+   
     avg_runtime = 0
     for _ in range(5):
-        start = time.time()
+        
         # Parse input file
-        dimension = int(sys.argv[2])
+        # dimension = int(sys.argv[2])
         
-        inputfile = open(sys.argv[3], "r")
-        entries = []
-        for line in (inputfile):
-            entries.append(int(line))
-        entries_len = len(entries)
-        mat1 = []
-        mat2 = []
+        # inputfile = open(sys.argv[3], "r")
+        # entries = []
+        # for line in (inputfile):
+        #     entries.append(int(line))
+        # entries_len = len(entries)
+        # mat1 = []
+        # mat2 = []
         
-        for i in range(0, (entries_len // 2), dimension):
-            mat1.append(entries[i : i + dimension])
-        for i in range((entries_len // 2), entries_len, dimension):
-            mat2.append(entries[i : i + dimension])
+        # for i in range(0, (entries_len // 2), dimension):
+        #     mat1.append(entries[i : i + dimension])
+        # for i in range((entries_len // 2), entries_len, dimension):
+        #     mat2.append(entries[i : i + dimension])
         
+        # testing
+        matrix =[[random.randint(0, 100) for _ in range(dim)] for _ in range(dim)]
+        
+        mat1 = matrix
+        mat2 = matrix
+        
+        start = time.time()
         matmult = strassen_matmult(mat1, mat2)
-        if len(matmult) != dimension:
-            matmult = [row[:dimension] for row in matmult[:dimension]]
+        if len(matmult) != dim:
+            matmult = [row[:dim] for row in matmult[:dim]]
         
         # for i in range(dimension):
         #     print(matmult[i][i])
