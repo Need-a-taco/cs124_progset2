@@ -180,7 +180,7 @@ def matrix_multplication():
     for i in range((entries_len // 2), entries_len, dimension):
         mat2.append(entries[i : i + dimension])
     
-    matmult = strassen_matmult(mat1, mat2, dimension-1)
+    matmult = strassen_matmult(mat1, mat2, (dimension // 2 +1))
     if len(matmult) != dimension:
         matmult = [row[:dimension] for row in matmult[:dimension]]
         
