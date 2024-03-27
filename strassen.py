@@ -29,10 +29,11 @@ def mergeblocks(upleft, upright, downleft, downright):
     return new_mat
 
 def pad_matrix(mat):
-    np_mat = np.array(mat)
-    pad_np_mat = np.pad(np_mat, ((0, 1), (0, 1)), mode='constant', constant_values=0)
-    pad_mat = pad_np_mat.tolist()
-    return pad_mat
+    for row in mat:
+        row.append(0)
+    new_row_length = len(mat[0])  # This now includes the newly added column of zeros.
+    mat.append([0] * new_row_length)
+    return mat
 
 def matrix_addition(mat1, mat2):
     new_mat = []
@@ -62,7 +63,6 @@ def matrix_subtraction(mat1, mat2):
 
 def conventional_matmult(mat1, mat2):
     new_mat = []
-    m = len(mat1)
     n = len(mat1[0])
     for i in range(n):
         new_row = []
@@ -75,13 +75,15 @@ def conventional_matmult(mat1, mat2):
     return new_mat
 
 def strassen_matmult(mat1, mat2, threshold):
-    if len(mat1) % 2 == 1:
+    init_len = len(mat1)
+    if (init_len <= threshold):
+        mat_prod = conventional_matmult(mat1, mat2)
+        return mat_prod
+    if init_len % 2 == 1:
         mat1 = pad_matrix(mat1)
         mat2 = pad_matrix(mat2)
     # Establish an arbitrary base case. To be adjusted
-    if (len(mat1) <= threshold):
-        mat_prod = conventional_matmult(mat1, mat2)
-        return mat_prod
+
         
     
     # --- Divide the matrices into blocks --- #
@@ -118,7 +120,6 @@ def strassen_matmult(mat1, mat2, threshold):
     upright_block = matrix_addition(p1, p2)
     downleft_block = matrix_addition(p3, p4)
     downright_block = matrix_subtraction(matrix_subtraction(matrix_addition(p1, p5), p3), p7)
-
     
     # Merge the new blocks
     matmult = mergeblocks(upleft_block, upright_block, 
@@ -179,11 +180,10 @@ def matrix_multplication():
         mat1.append(entries[i : i + dimension])
     for i in range((entries_len // 2), entries_len, dimension):
         mat2.append(entries[i : i + dimension])
+    matmult = strassen_matmult(mat1, mat2, ((dimension // 2) +1))
     
-    matmult = strassen_matmult(mat1, mat2, (dimension // 2 +1))
-    if len(matmult) != dimension:
+    if dimension % 2 == 1:
         matmult = [row[:dimension] for row in matmult[:dimension]]
-        
     for i in range(dimension):
         print(matmult[i][i])
 
