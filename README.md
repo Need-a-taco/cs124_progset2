@@ -25,3 +25,17 @@ def dotproduct_row_column (u, v):
     for i in range(len(u)):
         dotproduct += u[i] * v[i][0]
     return dotproduct
+
+def include_edge(p):     
+    result = np.random.binomial(1,p)
+    return result
+
+
+adj_mat = []
+for i in range(n):
+    new_row = [124] * n
+    adj_mat.append(new_row)
+for i in range(n):
+    for j in range(n):
+        if (adj_mat[i][j] == 124):
+            adj_mat[i][j] = adj_mat[j][i] = include_edge(p)
